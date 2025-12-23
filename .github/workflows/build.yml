@@ -178,14 +178,25 @@ jobs:
       - name: Prepare package
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          mkdir -p "$SDK_DIR/feeds/packages/multimedia"
-          ln -sf "$PWD" "$SDK_DIR/feeds/packages/multimedia/uxplay"
+          mkdir -p "$SDK_DIR/package/uxplay"
+          
+          # Copy only needed files, exclude .git and build artifacts
+          rsync -a --exclude='.git' --exclude='openwrt-sdk-*' \
+            --exclude='.github' --exclude='*.tar.xz' \
+            --exclude='build.log' --exclude='artifacts' \
+            . "$SDK_DIR/package/uxplay/"
+          
+          # Verify the Makefile is in place
+          test -f "$SDK_DIR/package/uxplay/Makefile" || {
+            echo "ERROR: Makefile not found in package/uxplay"
+            exit 1
+          }
           
       - name: Update feeds
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          ./scripts/feeds update packages
+          ./scripts/feeds update -a
           ./scripts/feeds install -a
           
       - name: Configure build
@@ -193,35 +204,36 @@ jobs:
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
           echo "CONFIG_PACKAGE_uxplay=m" > .config
+          make menuconfig KBUILD_VERBOSE=1 < /dev/null 2>&1 || true
           make defconfig
           
       - name: Build package
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          make package/uxplay/compile V=s 2>&1 | tee build.log
+          
+          make package/index
+          make package/uxplay/compile V=s
           
       - name: Create package artifact
-        if: success()
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           mkdir -p artifacts
           
-          # Chercher le fichier .ipk
-          IPK=$(find "$SDK_DIR/bin/packages" -name "uxplay_*.ipk" -type f)
-          if [ -f "$IPK" ]; then
-            cp "$IPK" artifacts/
-            ARCH_FILE="${{ matrix.arch_display }}"
-            ARCH_FILE=${ARCH_FILE// /_}
-            mv "artifacts/$(basename $IPK)" "artifacts/uxplay_${{ env.UXPLAY_VERSION }}-1_${ARCH_FILE}.ipk"
-            echo "Compilé avec succès: $(basename artifacts/uxplay_*.ipk)"
-          else
-            echo "❌ Erreur: fichier .ipk non trouvé"
+          IPK=$(find "$SDK_DIR/bin/packages" -name "uxplay_*.ipk" -type f | head -1)
+          
+          if [ ! -f "$IPK" ]; then
+            echo "ERROR: .ipk file not found"
             exit 1
           fi
           
+          cp "$IPK" artifacts/
+          ARCH_FILE="${{ matrix.arch_display }}"
+          ARCH_FILE=${ARCH_FILE// /_}
+          mv "artifacts/$(basename "$IPK")" "artifacts/uxplay_${{ env.UXPLAY_VERSION }}-1_${ARCH_FILE}.ipk"
+          echo "✅ Build successful"
+          
       - name: Upload artifacts
-        if: success()
         uses: actions/upload-artifact@v6
         with:
           name: uxplay-${{ matrix.arch_display }}
