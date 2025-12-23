@@ -160,7 +160,7 @@ jobs:
             
       - name: Download and extract SDK
         run: |
-          if [ ! -d "openwrt-sdk-"* ]; then
+          if ! ls -d openwrt-sdk-* &>/dev/null; then
             wget -q "$SDK_URL" -O sdk.tar.xz
             tar -xf sdk.tar.xz
             rm sdk.tar.xz
