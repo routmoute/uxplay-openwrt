@@ -204,7 +204,6 @@ jobs:
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
           echo "CONFIG_PACKAGE_uxplay=m" > .config
-          make menuconfig KBUILD_VERBOSE=1 < /dev/null 2>&1 || true
           make defconfig
           
       - name: Build package
