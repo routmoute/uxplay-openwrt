@@ -53,40 +53,41 @@ jobs:
             subtarget: bcm2710
             arch_display: "Raspberry Pi 3 (ARMv8)"
             
-          # Raspberry Pi Zero 2W
+          # Raspberry Pi 2
           - target: bcm27xx
-            subtarget: bcm2835
-            arch_display: "Raspberry Pi Zero 2W (ARMv6)"
+            subtarget: bcm2709
+            arch_display: "Raspberry Pi 2 (ARMv7)"
+            
+          # Raspberry Pi Zero/Zero W
+          - target: bcm27xx
+            subtarget: bcm2708
+            arch_display: "Raspberry Pi Zero/Zero W (ARMv6)"
             
           # MediaTek (TP-Link, Xiaomi, etc.) - mt7621 (32-bit)
           - target: ramips
             subtarget: mt7621
             arch_display: "MediaTek MT7621 (MIPS)"
             
-          # MediaTek - mt7981 (64-bit)
+          # MediaTek - mt7622 (ARM)
           - target: mediatek
-            subtarget: mt7981
-            arch_display: "MediaTek MT7981 (ARM)"
+            subtarget: mt7622
+            arch_display: "MediaTek MT7622 (ARM)"
             
-          # MediaTek - mt7986 (ARM64)
+          # MediaTek - mt7623 (ARM)
           - target: mediatek
-            subtarget: mt7986
-            arch_display: "MediaTek MT7986 (ARM64)"
+            subtarget: mt7623
+            arch_display: "MediaTek MT7623 (ARM)"
             
-          # Qualcomm - ipq807x (ARM64) - Routeurs haut de gamme
+          # MediaTek - mt7629 (ARM)
+          - target: mediatek
+            subtarget: mt7629
+            arch_display: "MediaTek MT7629 (ARM)"
+            
+          # Qualcomm - ipq807x (ARM64) - High-end routers
           - target: ipq807x
             subtarget: generic
             arch_display: "Qualcomm IPQ807x (ARM64)"
-            
-          # MIPS (Atheros, etc.)
-          - target: ath79
-            subtarget: generic
-            arch_display: "Atheros AR9xxx/QCA (MIPS)"
-            
-          # MIPS64 (Cavium)
-          - target: octeon
-            subtarget: generic
-            arch_display: "Cavium Octeon (MIPS64)"
+
 
     name: Build for ${{ matrix.arch_display }}
     
@@ -100,47 +101,48 @@ jobs:
           
       - name: Download OpenWrt SDK
         run: |
-          # Liste des URLs SDK connues
+          # Known SDK URLs
           case "${{ matrix.target }}-${{ matrix.subtarget }}" in
             x86-64)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/64/openwrt-sdk-23.05.0-x86-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/64/openwrt-sdk-23.05.0-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             x86-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/generic/openwrt-sdk-23.05.0-x86-generic_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/generic/openwrt-sdk-23.05.0-x86-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             armvirt-32)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armvirt/32/openwrt-sdk-23.05.0-armvirt-32_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armvirt/32/openwrt-sdk-23.05.0-armvirt-32_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             armvirt-64)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armvirt/64/openwrt-sdk-23.05.0-armvirt-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armvirt/64/openwrt-sdk-23.05.0-armvirt-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             bcm27xx-bcm2711)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2711/openwrt-sdk-23.05.0-bcm27xx-bcm2711_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2711/openwrt-sdk-23.05.0-bcm27xx-bcm2711_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              ;;
+            bcm27xx-bcm2709)
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2709/openwrt-sdk-23.05.0-bcm27xx-bcm2709_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             bcm27xx-bcm2710)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2710/openwrt-sdk-23.05.0-bcm27xx-bcm2710_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2710/openwrt-sdk-23.05.0-bcm27xx-bcm2710_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
-            bcm27xx-bcm2835)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2835/openwrt-sdk-23.05.0-bcm27xx-bcm2835_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+            bcm27xx-bcm2708)
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2708/openwrt-sdk-23.05.0-bcm27xx-bcm2708_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             ramips-mt7621)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ramips/mt7621/openwrt-sdk-23.05.0-ramips-mt7621_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ramips/mt7621/openwrt-sdk-23.05.0-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
-            mediatek-mt7981)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7981/openwrt-sdk-23.05.0-mediatek-mt7981_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+            mediatek-mt7622)
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7622/openwrt-sdk-23.05.0-mediatek-mt7622_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
-            mediatek-mt7986)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7986/openwrt-sdk-23.05.0-mediatek-mt7986_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+            mediatek-mt7623)
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7623/openwrt-sdk-23.05.0-mediatek-mt7623_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              ;;
+            mediatek-mt7629)
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7629/openwrt-sdk-23.05.0-mediatek-mt7629_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             ipq807x-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ipq807x/generic/openwrt-sdk-23.05.0-ipq807x-generic_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ipq807x/generic/openwrt-sdk-23.05.0-ipq807x-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
-            ath79-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ath79/generic/openwrt-sdk-23.05.0-ath79-generic_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
-              ;;
-            octeon-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/octeon/generic/openwrt-sdk-23.05.0-octeon-generic_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
-              ;;
+
             *)
               echo "Architecture non supportée: ${{ matrix.target }}-${{ matrix.subtarget }}"
               exit 1
@@ -161,7 +163,8 @@ jobs:
       - name: Download and extract SDK
         run: |
           if ! ls -d openwrt-sdk-* &>/dev/null; then
-            wget -q "$SDK_URL" -O sdk.tar.xz
+            echo "Downloading SDK from: $SDK_URL"
+            curl -L -o sdk.tar.xz "$SDK_URL" || wget -q "$SDK_URL" -O sdk.tar.xz
             tar -xf sdk.tar.xz
             rm sdk.tar.xz
           fi

@@ -16,14 +16,12 @@ The compiled `.ipk` will be in `bin/` directory.
 
 ### GitHub Actions
 
-Push to GitHub and workflows automatically compile for 14 architectures:
+Push to GitHub and workflows automatically compile for 10 architectures:
 - x86_64, x86
 - ARM (armv7l, aarch64)
-- Raspberry Pi (4, 3, Zero 2W)
-- MediaTek (MT7621, MT7981, MT7986)
+- Raspberry Pi (4, 3, 2, Zero/Zero W)
+- MediaTek (MT7621, MT7622, MT7623, MT7629)
 - Qualcomm IPQ807x
-- Atheros AR9xxx
-- Cavium Octeon
 
 **Tags trigger releases** with compiled packages:
 
