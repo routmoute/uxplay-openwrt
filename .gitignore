@@ -1,0 +1,45 @@
+# OpenWrt SDK
+openwrt-sdk-*/
+openwrt-*/
+
+# Build directories
+build_dir/
+staging_dir/
+bin/
+.build/
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.ipk
+*.o
+*.a
+*.so
+artifacts/
+
+# Logs
+*.log
+build.log
+compile.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Node modules (si utilisé)
+node_modules/
+package-lock.json
+
+# Misc
+.cache/
+.tmp/
+/downloads/

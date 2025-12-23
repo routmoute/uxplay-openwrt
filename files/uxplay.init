@@ -1,0 +1,32 @@
+#!/bin/sh /etc/rc.common
+# UxPlay service startup script for OpenWrt
+
+START=99
+STOP=10
+USE_PROCD=1
+
+UXPLAY_BIN="/usr/bin/uxplay"
+UXPLAY_CONF="/etc/config/uxplay"
+UXPLAY_PID_FILE="/var/run/uxplay.pid"
+
+start_service() {
+	[ -f "$UXPLAY_BIN" ] || return 1
+	
+	procd_open_instance
+	procd_set_param command "$UXPLAY_BIN"
+	
+	# Load configuration if it exists
+	if [ -f "$UXPLAY_CONF" ]; then
+		# Example: add options from config file
+		# procd_append_param command -n "$(uci get uxplay.general.name 2>/dev/null || echo UxPlay)"
+		procd_append_param command -vs kmssink
+	fi
+	
+	procd_set_param respawn
+	procd_close_instance
+}
+
+reload_service() {
+	stop
+	start
+}

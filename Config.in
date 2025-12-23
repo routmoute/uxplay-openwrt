@@ -1,0 +1,20 @@
+config UxPlay
+	bool "UxPlay - AirPlay Mirror and Audio server"
+	default y
+	help
+	  UxPlay is an AirPlay Mirror and AirPlay Audio server for Linux.
+	  It provides mirroring and audio streaming capability for Apple devices.
+
+config UxPlay-features
+	bool "Enable all features"
+	depends on PACKAGE_uxplay
+	default y
+	help
+	  Enable all optional UxPlay features including HLS support and Bluetooth LE beacon.
+
+config UxPlay-debug
+	bool "Build with debug symbols"
+	depends on PACKAGE_uxplay
+	default n
+	help
+	  Build UxPlay with debug symbols for debugging purposes.

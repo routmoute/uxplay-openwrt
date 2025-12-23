@@ -1,0 +1,112 @@
+name: Test PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'Makefile'
+      - 'Config.in'
+      - 'files/**'
+      - '.github/workflows/test.yml'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Makefile syntax
+        run: |
+          if command -v makefile-lint &> /dev/null; then
+            makefile-lint Makefile
+          else
+            echo "✓ Makefile syntax validation (basic)"
+            grep -E "^[a-zA-Z_].*:=" Makefile > /dev/null && echo "✓ Variables définies"
+            grep -E "^include" Makefile > /dev/null && echo "✓ Includes trouvés"
+          fi
+          
+      - name: Validate Config.in
+        run: |
+          echo "✓ Vérification Config.in"
+          grep -E "^config|^menu" Config.in > /dev/null && echo "✓ Configuration valide"
+          
+      - name: Check shell scripts
+        run: |
+          find files -name "*.sh" -type f | while read f; do
+            echo "Checking $f..."
+            bash -n "$f" && echo "  ✓ Syntaxe OK" || exit 1
+          done
+          
+      - name: Check init script
+        run: |
+          bash -n files/uxplay.init
+          grep -E "^START=|^STOP=|^USE_PROCD=" files/uxplay.init > /dev/null
+          echo "✓ Init script valide"
+
+  test-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [x86-64, armvirt-64, bcm27xx-bcm2711]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up cache key
+        id: cache-key
+        run: |
+          case "${{ matrix.target }}" in
+            x86-64)
+              URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/64/openwrt-sdk-23.05.0-x86-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              ;;
+            armvirt-64)
+              URL="https://downloads.openwrt.org/releases/23.05.0/targets/armvirt/64/openwrt-sdk-23.05.0-armvirt-64_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              ;;
+            bcm27xx-bcm2711)
+              URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2711/openwrt-sdk-23.05.0-bcm27xx-bcm2711_gcc-12.2.0_musl.Linux-x86_64.tar.xz"
+              ;;
+          esac
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev \
+            gawk git unzip gettext libssl-dev python3
+            
+      - name: Download SDK
+        run: |
+          wget -q "${{ steps.cache-key.outputs.url }}" -O sdk.tar.xz
+          tar -xf sdk.tar.xz
+          rm sdk.tar.xz
+          
+      - name: Prepare and build
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          mkdir -p "$SDK_DIR/feeds/packages/multimedia"
+          ln -sf "$PWD" "$SDK_DIR/feeds/packages/multimedia/uxplay"
+          cd "$SDK_DIR"
+          ./scripts/feeds update packages
+          ./scripts/feeds install -a
+          make package/uxplay/compile V=s
+          
+      - name: Check artifact
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          if find "$SDK_DIR/bin/packages" -name "uxplay_*.ipk" -type f | grep -q .; then
+            echo "✓ Package compilé avec succès"
+          else
+            echo "❌ Erreur: package non trouvé"
+            exit 1
+          fi
+
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Markdown lint
+        uses: nosborn/github-action-markdown-cli@v3.3.0
+        with:
+          files: .
+          config_file: .markdownlint.json
+        continue-on-error: true
