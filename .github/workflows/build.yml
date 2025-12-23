@@ -33,15 +33,15 @@ jobs:
             subtarget: generic
             arch_display: "x86"
             
-          # ARM 32-bit (NEON support)
-          - target: armvirt
-            subtarget: 32
-            arch_display: "armv7l"
+          # ARM Systemready 32-bit (armv7)
+          - target: armsr
+            subtarget: armv7
+            arch_display: "ARM Systemready armv7"
             
-          # ARM 64-bit
-          - target: armvirt
-            subtarget: 64
-            arch_display: "aarch64"
+          # ARM Systemready 64-bit (armv8)
+          - target: armsr
+            subtarget: armv8
+            arch_display: "ARM Systemready armv8"
             
           # Raspberry Pi 4/5 (bcm27xx)
           - target: bcm27xx
@@ -109,23 +109,23 @@ jobs:
             x86-generic)
               SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/generic/openwrt-sdk-23.05.0-x86-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
-            armvirt-32)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armvirt/32/openwrt-sdk-23.05.0-armvirt-32_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+            armsr-armv7)
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armsr/armv7/openwrt-sdk-23.05.0-armsr-armv7_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
               ;;
-            armvirt-64)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armvirt/64/openwrt-sdk-23.05.0-armvirt-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+            armsr-armv8)
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armsr/armv8/openwrt-sdk-23.05.0-armsr-armv8_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             bcm27xx-bcm2711)
               SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2711/openwrt-sdk-23.05.0-bcm27xx-bcm2711_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             bcm27xx-bcm2709)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2709/openwrt-sdk-23.05.0-bcm27xx-bcm2709_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2709/openwrt-sdk-23.05.0-bcm27xx-bcm2709_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
               ;;
             bcm27xx-bcm2710)
               SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2710/openwrt-sdk-23.05.0-bcm27xx-bcm2710_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             bcm27xx-bcm2708)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2708/openwrt-sdk-23.05.0-bcm27xx-bcm2708_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2708/openwrt-sdk-23.05.0-bcm27xx-bcm2708_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
               ;;
             ramips-mt7621)
               SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ramips/mt7621/openwrt-sdk-23.05.0-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
@@ -134,10 +134,10 @@ jobs:
               SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7622/openwrt-sdk-23.05.0-mediatek-mt7622_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
               ;;
             mediatek-mt7623)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7623/openwrt-sdk-23.05.0-mediatek-mt7623_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7623/openwrt-sdk-23.05.0-mediatek-mt7623_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
               ;;
             mediatek-mt7629)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7629/openwrt-sdk-23.05.0-mediatek-mt7629_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7629/openwrt-sdk-23.05.0-mediatek-mt7629_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
               ;;
             ipq807x-generic)
               SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ipq807x/generic/openwrt-sdk-23.05.0-ipq807x-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
@@ -187,6 +187,13 @@ jobs:
           cd "$SDK_DIR"
           ./scripts/feeds update packages
           ./scripts/feeds install -a
+          
+      - name: Configure build
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          cd "$SDK_DIR"
+          echo "CONFIG_PACKAGE_uxplay=m" > .config
+          make defconfig
           
       - name: Build package
         run: |

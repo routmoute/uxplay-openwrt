@@ -18,7 +18,7 @@ The compiled `.ipk` will be in `bin/` directory.
 
 Push to GitHub and workflows automatically compile for 10 architectures:
 - x86_64, x86
-- ARM (armv7l, aarch64)
+- ARM Systemready (armv7, armv8)
 - Raspberry Pi (4, 3, 2, Zero/Zero W)
 - MediaTek (MT7621, MT7622, MT7623, MT7629)
 - Qualcomm IPQ807x
