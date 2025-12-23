@@ -13,7 +13,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Check Makefile syntax
         run: |
@@ -49,7 +49,7 @@ jobs:
       matrix:
         target: [x86-64, armvirt-64, bcm27xx-bcm2711]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Set up cache key
         id: cache-key
@@ -102,10 +102,10 @@ jobs:
   markdown-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Markdown lint
-        uses: nosborn/github-action-markdown-cli@v3.3.0
+        uses: nosborn/github-action-markdown-cli@v3.5.0
         with:
           files: .
           config_file: .markdownlint.json
