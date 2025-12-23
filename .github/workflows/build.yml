@@ -196,6 +196,12 @@ jobs:
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
+          
+          # Replace git.openwrt.org with GitHub mirror (more reliable)
+          if [ -f feeds.conf.default ]; then
+            sed -i 's|https://git.openwrt.org/openwrt/|https://github.com/openwrt/|g' feeds.conf.default
+          fi
+          
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           
