@@ -204,6 +204,7 @@ jobs:
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
           echo "CONFIG_PACKAGE_uxplay=m" > .config
+          echo "CONFIG_PACKAGE_python3-pymysql=n" >> .config
           make defconfig
           
       - name: Build package
