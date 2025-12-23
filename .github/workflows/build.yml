@@ -199,12 +199,21 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           
+      - name: Fix pymysql circular dependency
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          # Comment out the problematic circular dependency in pymysql Config.in
+          PYMYSQL_CONFIG="$SDK_DIR/feeds/packages/lang/python/pymysql/Config.in"
+          if [ -f "$PYMYSQL_CONFIG" ]; then
+            sed -i 's/^\s*config PYTHON3_PYMYSQL_SHA_PASSWORD_SUPPORT/# config PYTHON3_PYMYSQL_SHA_PASSWORD_SUPPORT/' "$PYMYSQL_CONFIG"
+            sed -i 's/^\s*depends on PACKAGE_python3-pymysql/# depends on PACKAGE_python3-pymysql/' "$PYMYSQL_CONFIG"
+          fi
+          
       - name: Configure build
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
           echo "CONFIG_PACKAGE_uxplay=m" > .config
-          echo "CONFIG_PACKAGE_python3-pymysql=n" >> .config
           make defconfig
           
       - name: Build package
