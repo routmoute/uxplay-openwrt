@@ -216,8 +216,6 @@ jobs:
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          
-          make package/index
           make package/uxplay/compile V=s
           
       - name: Create package artifact
