@@ -192,8 +192,24 @@ jobs:
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          echo "CONFIG_PACKAGE_uxplay=m" > .config
           
+          # Generate target configuration based on matrix target/subtarget
+          TARGET="${{ matrix.target }}"
+          SUBTARGET="${{ matrix.subtarget }}"
+          
+          cat > .config << EOF
+          CONFIG_TARGET_${TARGET}=y
+          CONFIG_TARGET_${TARGET}_${SUBTARGET}=y
+          CONFIG_PACKAGE_uxplay=m
+          CONFIG_PACKAGE_libplist=y
+          CONFIG_PACKAGE_libopenssl=y
+          CONFIG_PACKAGE_libgstreamer1=y
+          CONFIG_PACKAGE_gstreamer1-plugins-base=y
+          CONFIG_PACKAGE_mdnsresponder=y
+          CONFIG_PACKAGE_libdbus=y
+          CONFIG_PACKAGE_libstdcpp=y
+          EOF
+
       - name: Update feeds
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
@@ -211,12 +227,13 @@ jobs:
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          # Skip defconfig if it fails - we'll configure manually
-          make defconfig V=s 2>&1 || {
-            echo "defconfig failed, continuing with manual config..."
-            # Ensure uxplay=m is set in .config
-            echo "CONFIG_PACKAGE_uxplay=m" >> .config
+          # Remove feeds configuration to prevent scanning errors
+          rm -f tmp/.config-feeds.in tmp/.config-package.in
+          # Just validate our .config without scanning feeds
+          make oldconfig V=s 2>&1 || {
+            echo "oldconfig failed, continuing with current .config..."
           }
+          
           
       - name: Build package
         run: |
