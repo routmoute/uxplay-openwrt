@@ -83,9 +83,25 @@ jobs:
           cat > .config << EOF
           CONFIG_TARGET_${{ matrix.target }}=y
           CONFIG_TARGET_${{ matrix.target }}_${{ matrix.subtarget }}=y
+          CONFIG_PACKAGE_libplist=y
+          CONFIG_PACKAGE_libopenssl=y
+          CONFIG_PACKAGE_libdbus=y
+          CONFIG_PACKAGE_mdnsresponder=y
+          CONFIG_PACKAGE_libgstreamer1=y
+          CONFIG_PACKAGE_gstreamer1-plugins-base=y
           CONFIG_PACKAGE_uxplay=m
           EOF
           yes "" | make oldconfig V=sc 2>&1 | tail -20
+          
+          # Compiler les dépendances d'abord
+          make package/libs/libplist/compile V=w
+          make package/libs/openssl/compile V=w
+          make package/utils/dbus/compile V=w
+          make package/net/mdnsresponder/compile V=w
+          make package/feeds/packages/gstreamer1/compile V=w
+          make package/feeds/packages/gst1-plugins-base/compile V=w
+          
+          # Compiler uxplay
           make package/uxplay/compile V=w
           
       - name: Package
