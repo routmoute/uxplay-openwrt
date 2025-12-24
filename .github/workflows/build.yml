@@ -220,7 +220,15 @@ jobs:
           for dep in libplist libopenssl libdbus mdnsresponder libgstreamer1 gstreamer1-plugins-base; do
             ./scripts/feeds install "$dep"
           done
-          
+      - name: Pre-compile dependencies
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          cd "$SDK_DIR"
+          # Pre-compile dependencies so uxplay can link against them
+          for dep in libplist libopenssl libdbus mdnsresponder libgstreamer1 gstreamer1-plugins-base; do
+            echo "Building dependency: $dep"
+            make package/$dep/compile -j1 V=s 2>&1 | tail -50 || true
+          done
       - name: Build without feeds
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
