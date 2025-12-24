@@ -210,6 +210,13 @@ jobs:
           CONFIG_PACKAGE_libstdcpp=y
           EOF
 
+      - name: Prepare SDK
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          cd "$SDK_DIR"
+          # Initialize build system without interactive prompts
+          make defconfig -j1 V=sc
+
       - name: Build package
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
