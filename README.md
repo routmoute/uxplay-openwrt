@@ -1,88 +1,109 @@
-# UxPlay OpenWrt Bundle
+# UxPlay OpenWrt Package
 
-OpenWrt package for AirPlay 2 server (UxPlay).
+OpenWrt package for UxPlay - AirPlay Mirror and Audio server.
 
-## Quick Start
+## Features
 
-### Local Build
+- AirPlay 2 mirroring and audio streaming
+- Supports iOS/iPadOS/macOS devices
+- Pre-built packages for 10+ architectures
+- Automated CI/CD with GitHub Actions
 
-Requires OpenWrt SDK.
+## Quick Installation
+
+Download the `.ipk` for your architecture from [Releases](../../releases).
+
+Install on your OpenWrt device:
 
 ```bash
-./build.sh /path/to/openwrt-sdk-*
+scp uxplay_*.ipk root@192.168.1.1:/tmp/
+ssh root@192.168.1.1 'opkg install /tmp/uxplay_*.ipk'
 ```
 
-The compiled `.ipk` will be in `bin/` directory.
+Run UxPlay:
 
-### GitHub Actions
+```bash
+uxplay
+```
 
-Push to GitHub and workflows automatically compile for 10 architectures:
-- x86_64, x86
+## Supported Architectures
+
+- x86_64, x86 (32-bit)
 - ARM Systemready (armv7, armv8)
-- Raspberry Pi (4, 3, 2, Zero/Zero W)
-- MediaTek (MT7621, MT7622, MT7623, MT7629)
+- Raspberry Pi (4/5, 3, 2, Zero/Zero W)
+- MediaTek routers (MT7621, MT7622, MT7623, MT7629)
 - Qualcomm IPQ807x
 
-**Tags trigger releases** with compiled packages:
+## Building from Source
+
+### Using GitHub Actions (Recommended)
+
+Push to GitHub or create a tag to trigger automated builds:
 
 ```bash
 git tag v1.73
 git push origin v1.73
 ```
 
-## Installation
+Artifacts will be available in Actions tab or as a Release.
 
-Copy `.ipk` to your device:
+### Local Build
 
-```bash
-scp uxplay_1.73_*_*.ipk root@192.168.1.1:/tmp/
-ssh root@192.168.1.1 'opkg install /tmp/uxplay_1.73_*_*.ipk'
-```
-
-Enable and start service:
+Requires OpenWrt SDK for your target architecture.
 
 ```bash
-uci set uxplay.@general[0].enabled=1
-uci commit uxplay
-/etc/init.d/uxplay start
+./build.sh /path/to/openwrt-sdk
 ```
 
-## Configuration
+The compiled `.ipk` will be in the SDK's `bin/packages/` directory.
 
-Edit via UCI:
+## Usage
+
+Basic usage:
 
 ```bash
-uci set uxplay.@general[0].name="My Device"
-uci set uxplay.@general[0].port=6000
-uci commit uxplay
-/etc/init.d/uxplay restart
+uxplay
 ```
 
-Full config in `/etc/config/uxplay`.
+Common options:
+
+```bash
+uxplay -n "My AirPlay Server"  # Custom name
+uxplay -p 7000                 # Custom port
+uxplay -vs kmssink             # Video sink
+uxplay -as alsasink            # Audio sink
+```
+
+Full documentation: `uxplay -h`
 
 ## Troubleshooting
 
-### Service won't start
-- Check logs: `/var/log/uxplay.log`
-- Verify dependencies: `opkg list-installed | grep gstreamer`
-- Check port: `netstat -tlnp | grep 6000`
+**Dependencies missing:**
+```bash
+opkg update
+opkg install libplist libopenssl libdbus mdnsresponder libgstreamer1 gstreamer1-plugins-base
+```
 
-### Audio/Video issues
-- Ensure GStreamer plugins installed: `opkg install gstreamer1-plugins-{base,good,bad}`
-- Check hardware acceleration support for your platform
+**Check if running:**
+```bash
+ps | grep uxplay
+netstat -tlnp | grep 7000
+```
 
-### Build fails
-- Update SDK: `./build.sh /path/to/sdk && make distclean`
-- Check `Config.in` dependencies are available
+**Logs:**
+Run in foreground to see output: `uxplay -d`
 
-## Files
+## Project Structure
 
 - `Makefile` - OpenWrt package definition
-- `Config.in` - Configuration options
-- `build.sh` - Local build helper
-- `files/` - Init script, config template, install hook
-- `.github/workflows/` - GitHub Actions CI/CD
+- `build.sh` - Local build helper script
+- `.github/workflows/build.yml` - CI/CD automation
 
 ## License
 
-Same as UxPlay (LGPL 2.1+).
+GPL-3.0 (same as UxPlay upstream)
+
+## Credits
+
+- UxPlay: https://github.com/FDH2/UxPlay
+- OpenWrt: https://openwrt.org

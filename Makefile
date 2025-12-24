@@ -4,20 +4,18 @@ PKG_NAME:=uxplay
 PKG_VERSION:=master
 PKG_RELEASE:=1
 
-# Logique pour déterminer la source
+# Si PKG_VERSION contient "v" (ex: v1.72.2), utiliser le tag
+# Sinon (master ou autre branche), utiliser git
 ifeq ($(findstring v,$(PKG_VERSION)),v)
-  # C'est un tag (v1.72.2, v1.73, etc.)
   PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
   PKG_SOURCE_URL:=https://github.com/FDH2/UxPlay/archive/refs/tags/$(PKG_VERSION).tar.gz
   PKG_HASH:=skip
-  PKG_BUILD_DIR:=$(BUILD_DIR)/UxPlay-$(PKG_VERSION)
+  PKG_BUILD_DIR:=$(BUILD_DIR)/UxPlay-$(subst v,,$(PKG_VERSION))
 else
-  # C'est master (ou autre branche)
   PKG_SOURCE_PROTO:=git
   PKG_SOURCE_URL:=https://github.com/FDH2/UxPlay.git
   PKG_SOURCE_VERSION:=$(PKG_VERSION)
-  # Quand on clone depuis git, OpenWrt crée: ${PKG_NAME}-${PKG_SOURCE_VERSION}
-  PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)
+  PKG_MIRROR_HASH:=skip
 endif
 
 PKG_INSTALL:=1
@@ -35,7 +33,6 @@ define Package/uxplay
   TITLE:=AirPlay Mirror and Audio server
   URL:=https://github.com/FDH2/UxPlay
   DEPENDS:=+libstdcpp +libplist +libopenssl +libdbus +mdnsresponder +libgstreamer1 +gstreamer1-plugins-base
-  MENU:=1
 endef
 
 define Package/uxplay/description

@@ -7,14 +7,6 @@ on:
   pull_request:
     branches: [ main, master, develop ]
   workflow_dispatch:
-    inputs:
-      uxplay_version:
-        description: 'UxPlay version to build (default: 1.73)'
-        required: false
-        default: '1.73'
-
-env:
-  UXPLAY_VERSION: ${{ github.event.inputs.uxplay_version || '1.73' }}
 
 jobs:
   build:
@@ -23,264 +15,122 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Architecture: x86_64
-          - target: x86
-            subtarget: 64
-            arch_display: "x86_64"
-            
-          # Architecture: x86 32-bit
-          - target: x86
-            subtarget: generic
-            arch_display: "x86"
-            
-          # ARM Systemready 32-bit (armv7)
-          - target: armsr
-            subtarget: armv7
-            arch_display: "ARM Systemready armv7"
-            
-          # ARM Systemready 64-bit (armv8)
-          - target: armsr
-            subtarget: armv8
-            arch_display: "ARM Systemready armv8"
-            
-          # Raspberry Pi 4/5 (bcm27xx)
-          - target: bcm27xx
-            subtarget: bcm2711
-            arch_display: "Raspberry Pi 4/5 (ARMv8)"
-            
-          # Raspberry Pi 3 (bcm27xx)
-          - target: bcm27xx
-            subtarget: bcm2710
-            arch_display: "Raspberry Pi 3 (ARMv8)"
-            
-          # Raspberry Pi 2
-          - target: bcm27xx
-            subtarget: bcm2709
-            arch_display: "Raspberry Pi 2 (ARMv7)"
-            
-          # Raspberry Pi Zero/Zero W
-          - target: bcm27xx
-            subtarget: bcm2708
-            arch_display: "Raspberry Pi Zero/Zero W (ARMv6)"
-            
-          # MediaTek (TP-Link, Xiaomi, etc.) - mt7621 (32-bit)
-          - target: ramips
-            subtarget: mt7621
-            arch_display: "MediaTek MT7621 (MIPS)"
-            
-          # MediaTek - mt7622 (ARM)
-          - target: mediatek
-            subtarget: mt7622
-            arch_display: "MediaTek MT7622 (ARM)"
-            
-          # MediaTek - mt7623 (ARM)
-          - target: mediatek
-            subtarget: mt7623
-            arch_display: "MediaTek MT7623 (ARM)"
-            
-          # MediaTek - mt7629 (ARM)
-          - target: mediatek
-            subtarget: mt7629
-            arch_display: "MediaTek MT7629 (ARM)"
-            
-          # Qualcomm - ipq807x (ARM64) - High-end routers
-          - target: ipq807x
-            subtarget: generic
-            arch_display: "Qualcomm IPQ807x (ARM64)"
+          - { target: x86, subtarget: 64, arch: x86_64, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/x86/64/openwrt-sdk-24.10.4-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: x86, subtarget: generic, arch: x86, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/x86/generic/openwrt-sdk-24.10.4-x86-generic_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: armsr, subtarget: armv7, arch: armv7, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv7/openwrt-sdk-24.10.4-armsr-armv7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst" }
+          - { target: armsr, subtarget: armv8, arch: armv8, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv8/openwrt-sdk-24.10.4-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: bcm27xx, subtarget: bcm2711, arch: rpi4, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2711/openwrt-sdk-24.10.4-bcm27xx-bcm2711_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: bcm27xx, subtarget: bcm2710, arch: rpi3, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2710/openwrt-sdk-24.10.4-bcm27xx-bcm2710_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: bcm27xx, subtarget: bcm2709, arch: rpi2, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2709/openwrt-sdk-24.10.4-bcm27xx-bcm2709_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst" }
+          - { target: bcm27xx, subtarget: bcm2708, arch: rpi0, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2708/openwrt-sdk-24.10.4-bcm27xx-bcm2708_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst" }
+          - { target: ramips, subtarget: mt7621, arch: mt7621, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/ramips/mt7621/openwrt-sdk-24.10.4-ramips-mt7621_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: mediatek, subtarget: mt7622, arch: mt7622, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7622/openwrt-sdk-24.10.4-mediatek-mt7622_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: mediatek, subtarget: mt7623, arch: mt7623, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7623/openwrt-sdk-24.10.4-mediatek-mt7623_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: mediatek, subtarget: mt7629, arch: mt7629, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7629/openwrt-sdk-24.10.4-mediatek-mt7629_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { target: ipq807x, subtarget: generic, arch: ipq807x, sdk_url: "https://downloads.openwrt.org/releases/24.10.4/targets/ipq807x/generic/openwrt-sdk-24.10.4-ipq807x-generic_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
 
-
-    name: Build for ${{ matrix.arch_display }}
+    name: ${{ matrix.arch }}
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v4
           
-      - name: Download OpenWrt SDK
-        run: |
-          # Known SDK URLs for OpenWrt 24.10.4
-          case "${{ matrix.target }}-${{ matrix.subtarget }}" in
-            x86-64)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/x86/64/openwrt-sdk-24.10.4-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            x86-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/x86/generic/openwrt-sdk-24.10.4-x86-generic_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            armsr-armv7)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv7/openwrt-sdk-24.10.4-armsr-armv7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst"
-              ;;
-            armsr-armv8)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv8/openwrt-sdk-24.10.4-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            bcm27xx-bcm2711)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2711/openwrt-sdk-24.10.4-bcm27xx-bcm2711_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            bcm27xx-bcm2709)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2709/openwrt-sdk-24.10.4-bcm27xx-bcm2709_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst"
-              ;;
-            bcm27xx-bcm2710)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2710/openwrt-sdk-24.10.4-bcm27xx-bcm2710_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            bcm27xx-bcm2708)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2708/openwrt-sdk-24.10.4-bcm27xx-bcm2708_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst"
-              ;;
-            ramips-mt7621)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/ramips/mt7621/openwrt-sdk-24.10.4-ramips-mt7621_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            mediatek-mt7622)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7622/openwrt-sdk-24.10.4-mediatek-mt7622_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            mediatek-mt7623)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7623/openwrt-sdk-24.10.4-mediatek-mt7623_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            mediatek-mt7629)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7629/openwrt-sdk-24.10.4-mediatek-mt7629_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-            ipq807x-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/ipq807x/generic/openwrt-sdk-24.10.4-ipq807x-generic_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
-              ;;
-
-            *)
-              echo "Architecture non supportée: ${{ matrix.target }}-${{ matrix.subtarget }}"
-              exit 1
-              ;;
-          esac
-          
-          echo "SDK_URL=$SDK_URL" >> $GITHUB_ENV
-          echo "Téléchargement: $SDK_URL"
-          
-      - name: Cache OpenWrt SDK
-        uses: actions/cache@v5
+      - name: Cache SDK
+        uses: actions/cache@v4
         with:
           path: openwrt-sdk-*/
-          key: sdk-24.10.4-${{ matrix.target }}-${{ matrix.subtarget }}-${{ hashFiles('.github/workflows/build.yml') }}
-          restore-keys: |
-            sdk-24.10.4-${{ matrix.target }}-${{ matrix.subtarget }}-
-            
-      - name: Download and extract SDK
+          key: sdk-${{ matrix.target }}-${{ matrix.subtarget }}-${{ hashFiles('.github/workflows/build.yml') }}
+          
+      - name: Download SDK
         run: |
           if ! ls -d openwrt-sdk-* &>/dev/null; then
-            echo "Downloading SDK from: $SDK_URL"
-            curl -L -o sdk.tar.zst "$SDK_URL" || wget -q "$SDK_URL" -O sdk.tar.zst
+            curl -L -o sdk.tar.zst "${{ matrix.sdk_url }}"
             tar -xf sdk.tar.zst
             rm sdk.tar.zst
           fi
           
-      - name: Install dependencies
+      - name: Install deps
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev \
-            gawk git unzip gettext libssl-dev python3 python3-pip zstd
+            gawk git gettext libssl-dev python3 zstd
             
-      - name: Prepare package
+      - name: Prepare
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           mkdir -p "$SDK_DIR/package/uxplay"
-          
-          # Copy only needed files, exclude .git and build artifacts
           rsync -a --exclude='.git' --exclude='openwrt-sdk-*' \
             --exclude='.github' --exclude='*.tar.zst' \
-            --exclude='build.log' --exclude='artifacts' \
             . "$SDK_DIR/package/uxplay/"
           
-          # Verify the Makefile is in place
-          test -f "$SDK_DIR/package/uxplay/Makefile" || {
-            echo "ERROR: Makefile not found in package/uxplay"
-            exit 1
-          }
+          # Déterminer la version UxPlay à compiler
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            UXPLAY_VERSION="${{ github.ref_name }}"
+          else
+            UXPLAY_VERSION="master"
+          fi
           
-      - name: Configure and build
+          # Injecter la version dans le Makefile
+          sed -i "s/PKG_VERSION:=master/PKG_VERSION:=$UXPLAY_VERSION/" \
+            "$SDK_DIR/package/uxplay/Makefile"
+          
+          echo "Building UxPlay version: $UXPLAY_VERSION"
+          
+      - name: Build
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          
-          # Generate target configuration
-          TARGET="${{ matrix.target }}"
-          SUBTARGET="${{ matrix.subtarget }}"
-          
           cat > .config << EOF
-          CONFIG_TARGET_${TARGET}=y
-          CONFIG_TARGET_${TARGET}_${SUBTARGET}=y
+          CONFIG_TARGET_${{ matrix.target }}=y
+          CONFIG_TARGET_${{ matrix.target }}_${{ matrix.subtarget }}=y
           CONFIG_PACKAGE_uxplay=m
           EOF
-          
-          # Initialize config non-interactively
           yes "" | make oldconfig V=sc 2>&1 | tail -20
-          
-          # Build uxplay package
           make package/uxplay/compile V=w
           
-      - name: Create package artifact
+      - name: Package
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           mkdir -p artifacts
+          IPK=$(find "$SDK_DIR/bin/packages" -name "uxplay_*.ipk" | head -1)
+          [ -f "$IPK" ] || exit 1
+          cp "$IPK" "artifacts/uxplay_${{ matrix.arch }}.ipk"
           
-          IPK=$(find "$SDK_DIR/bin/packages" -name "uxplay_*.ipk" -type f | head -1)
-          
-          if [ ! -f "$IPK" ]; then
-            echo "ERROR: .ipk file not found"
-            exit 1
-          fi
-          
-          cp "$IPK" artifacts/
-          ARCH_FILE="${{ matrix.arch_display }}"
-          ARCH_FILE=${ARCH_FILE// /_}
-          mv "artifacts/$(basename "$IPK")" "artifacts/uxplay_${{ env.UXPLAY_VERSION }}-1_${ARCH_FILE}.ipk"
-          echo "✅ Build successful"
-          
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+      - name: Upload
+        uses: actions/upload-artifact@v4
         with:
-          name: uxplay-${{ matrix.arch_display }}
+          name: uxplay-${{ matrix.arch }}
           path: artifacts/
           retention-days: 30
           
-      - name: Upload to release
+      - name: Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/*.ipk
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Comment on PR
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v8
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ Build failed for ${{ matrix.arch_display }}\n\nPlease check the workflow logs.'
-            })
 
   summary:
     runs-on: ubuntu-latest
     needs: build
     if: always()
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v7
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
         
-      - name: Create summary
+      - name: Summary
         run: |
-          echo "## 📦 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Build Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Architecture | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| Arch | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          
           for dir in uxplay-*; do
             if [ -d "$dir" ] && [ -f "$dir/uxplay_"*.ipk ]; then
-              echo "| ${dir#uxplay-} | ✅ Success |" >> $GITHUB_STEP_SUMMARY
+              echo "| ${dir#uxplay-} | ✅ |" >> $GITHUB_STEP_SUMMARY
             else
-              echo "| ${dir#uxplay-} | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+              echo "| ${dir#uxplay-} | ❌ |" >> $GITHUB_STEP_SUMMARY
             fi
           done
-          
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          find . -name "uxplay_*.ipk" -type f -exec ls -lh {} \; | awk '{print $9, "(" $5 ")"}' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          find . -name "*.ipk" -exec ls -lh {} \; | awk '{print $9, $5}' >> $GITHUB_STEP_SUMMARY
