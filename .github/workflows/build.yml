@@ -216,12 +216,23 @@ jobs:
           cd "$SDK_DIR"
           # Initialize build system without interactive prompts
           yes "" | make oldconfig V=sc
+          
+      - name: Build essential dependencies
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          cd "$SDK_DIR"
+          # Pre-compile only the essential dependencies CMake needs
+          # These must be available before uxplay CMake runs
+          for dep in libplist libopenssl libdbus mdnsresponder; do
+            echo "Building dependency: $dep"
+            make package/$dep/compile -j1 V=s
+          done
 
       - name: Build package
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          # In SDK, dependencies are pre-built and available
+          # In SDK, dependencies are now pre-built
           # Just compile uxplay
           make package/uxplay/compile V=w
           
