@@ -188,12 +188,12 @@ jobs:
             exit 1
           }
           
-      - name: Configure build (basic)
+      - name: Configure and build
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
           
-          # Generate target configuration based on matrix target/subtarget
+          # Generate target configuration
           TARGET="${{ matrix.target }}"
           SUBTARGET="${{ matrix.subtarget }}"
           
@@ -201,39 +201,12 @@ jobs:
           CONFIG_TARGET_${TARGET}=y
           CONFIG_TARGET_${TARGET}_${SUBTARGET}=y
           CONFIG_PACKAGE_uxplay=m
-          CONFIG_PACKAGE_libplist=y
-          CONFIG_PACKAGE_libopenssl=y
-          CONFIG_PACKAGE_libgstreamer1=y
-          CONFIG_PACKAGE_gstreamer1-plugins-base=y
-          CONFIG_PACKAGE_mdnsresponder=y
-          CONFIG_PACKAGE_libdbus=y
-          CONFIG_PACKAGE_libstdcpp=y
           EOF
-
-      - name: Prepare SDK
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          # Initialize build system without interactive prompts
-          yes "" | make oldconfig V=sc
           
-      - name: Build essential dependencies
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          # Pre-compile only the essential dependencies CMake needs
-          # These must be available before uxplay CMake runs
-          for dep in libplist libopenssl libdbus mdnsresponder; do
-            echo "Building dependency: $dep"
-            make package/$dep/compile -j1 V=s
-          done
-
-      - name: Build package
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          # In SDK, dependencies are now pre-built
-          # Just compile uxplay
+          # Initialize config non-interactively
+          yes "" | make oldconfig V=sc 2>&1 | tail -20
+          
+          # Build uxplay package
           make package/uxplay/compile V=w
           
       - name: Create package artifact

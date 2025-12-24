@@ -44,10 +44,6 @@ define Package/uxplay/description
   running UxPlay, similar to how they can stream to an Apple TV.
 endef
 
-define Package/uxplay/config
-  source "$(SOURCE)/Config.in"
-endef
-
 CMAKE_OPTIONS += \
 	-DNO_MARCH_NATIVE=ON \
 	-DCMAKE_BUILD_TYPE=Release
@@ -55,15 +51,6 @@ CMAKE_OPTIONS += \
 define Package/uxplay/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uxplay $(1)/usr/bin/
-	
-	$(INSTALL_DIR) $(1)/usr/share/man/man1
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/uxplay.1 $(1)/usr/share/man/man1/
-	
-	$(INSTALL_DIR) $(1)/etc/systemd/user
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/uxplay.service $(1)/etc/systemd/user/
-	
-	$(INSTALL_DIR) $(1)/usr/share/doc/uxplay
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/README.md $(1)/usr/share/doc/uxplay/
 endef
 
 $(eval $(call BuildPackage,uxplay))
