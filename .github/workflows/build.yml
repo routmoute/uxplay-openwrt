@@ -212,53 +212,12 @@ jobs:
           echo "CONFIG_PACKAGE_uxplay=m" > .config
           make defconfig
           
-      - name: Build dependency - libplist
+      - name: Build package
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          make package/libplist/compile V=s
-          
-      - name: Build dependency - libopenssl
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          make package/libopenssl/compile V=s
-          
-      - name: Build dependency - libavahi-compat-libdnssd
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          make package/libavahi-compat-libdnssd/compile V=s
-          
-      - name: Build dependency - libgstreamer1
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          make package/libgstreamer1/compile V=s
-          
-      - name: Build dependency - gstreamer1-plugins-base
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          make package/gstreamer1-plugins-base/compile V=s
-          
-      - name: Build dependency - gstreamer1-plugins-good
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          make package/gstreamer1-plugins-good/compile V=s
-          
-      - name: Build dependency - gstreamer1-plugins-bad
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          make package/gstreamer1-plugins-bad/compile V=s
-          
-      - name: Build UxPlay package
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          make package/uxplay/compile V=s
+          echo "Building UxPlay package..."
+          make package/uxplay/compile V=w
           
       - name: Create package artifact
         run: |
