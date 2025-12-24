@@ -16,8 +16,8 @@ else
   PKG_SOURCE_PROTO:=git
   PKG_SOURCE_URL:=https://github.com/FDH2/UxPlay.git
   PKG_SOURCE_VERSION:=$(PKG_VERSION)
-  # Quand on clone depuis git, le répertoire s'appelle juste UxPlay
-  PKG_BUILD_DIR:=$(BUILD_DIR)/UxPlay
+  # Quand on clone depuis git, OpenWrt crée: ${PKG_NAME}-${PKG_SOURCE_VERSION}
+  PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)
 endif
 
 PKG_INSTALL:=1
