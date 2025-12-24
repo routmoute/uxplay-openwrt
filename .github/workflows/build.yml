@@ -214,33 +214,19 @@ jobs:
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          # Update feeds
+          # Update feeds to get dependency packages
           ./scripts/feeds update packages
-          # Install only the dependency packages we need, not uxplay itself
+          # Install dependency packages from feeds
           for dep in libplist libopenssl libdbus mdnsresponder libgstreamer1 gstreamer1-plugins-base; do
             ./scripts/feeds install "$dep"
           done
-      - name: Pre-compile dependencies
+
+      - name: Build package with dependencies
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          # Pre-compile dependencies so uxplay can link against them
-          for dep in libplist libopenssl libdbus mdnsresponder libgstreamer1 gstreamer1-plugins-base; do
-            echo "Building dependency: $dep"
-            make package/$dep/compile -j1 V=s 2>&1 | tail -50 || true
-          done
-      - name: Build without feeds
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          # Validate .config to initialize build system
-          make defconfig V=s
-          
-      - name: Build package
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          echo "Building UxPlay package..."
+          # Just compile uxplay - it will pull in dependencies as needed
+          # Ignore warnings about missing optional dependencies
           make package/uxplay/compile V=w
           
       - name: Create package artifact
