@@ -210,11 +210,22 @@ jobs:
           CONFIG_PACKAGE_libstdcpp=y
           EOF
 
+      - name: Update feeds and install dependencies
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          cd "$SDK_DIR"
+          # Update feeds
+          ./scripts/feeds update packages
+          # Install only the dependency packages we need, not uxplay itself
+          for dep in libplist libopenssl libdbus mdnsresponder libgstreamer1 gstreamer1-plugins-base; do
+            ./scripts/feeds install "$dep"
+          done
+          
       - name: Build without feeds
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          # Validate .config non-interactively to initialize build system
+          # Validate .config to initialize build system
           make defconfig V=s
           
       - name: Build package
