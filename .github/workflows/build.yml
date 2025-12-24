@@ -178,7 +178,7 @@ jobs:
           
           # Copy only needed files, exclude .git and build artifacts
           rsync -a --exclude='.git' --exclude='openwrt-sdk-*' \
-            --exclude='.github' --exclude='*.tar.xz' \
+            --exclude='.github' --exclude='*.tar.zst' \
             --exclude='build.log' --exclude='artifacts' \
             . "$SDK_DIR/package/uxplay/"
           
@@ -187,6 +187,12 @@ jobs:
             echo "ERROR: Makefile not found in package/uxplay"
             exit 1
           }
+          
+      - name: Configure build (basic)
+        run: |
+          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
+          cd "$SDK_DIR"
+          echo "CONFIG_PACKAGE_uxplay=m" > .config
           
       - name: Update feeds
         run: |
@@ -201,12 +207,11 @@ jobs:
           # Simply delete the problematic pymysql package
           rm -rf "$SDK_DIR/feeds/packages/lang/python/pymysql"
           
-      - name: Configure build
+      - name: Configure build (defconfig)
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          echo "CONFIG_PACKAGE_uxplay=m" > .config
-          make defconfig
+          make defconfig V=s
           
       - name: Build package
         run: |
