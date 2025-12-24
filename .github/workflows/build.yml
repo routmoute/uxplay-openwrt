@@ -210,29 +210,13 @@ jobs:
           CONFIG_PACKAGE_libstdcpp=y
           EOF
 
-      - name: Update feeds
+      - name: Build without feeds
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-          
-      - name: Remove pymysql to avoid circular dependency
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          # Simply delete the problematic pymysql package
-          rm -rf "$SDK_DIR/feeds/packages/lang/python/pymysql"
-          
-      - name: Configure build (defconfig)
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          # Remove feeds configuration to prevent scanning errors
-          rm -f tmp/.config-feeds.in tmp/.config-package.in
-          # Just validate our .config without scanning feeds
-          make oldconfig V=s 2>&1 || {
-            echo "oldconfig failed, continuing with current .config..."
-          }
+          # Build uxplay directly as a local package without involving feeds
+          # The package is already in package/uxplay/ and has all its dependencies
+          # We don't need feeds for a local build
           
           
       - name: Build package
