@@ -215,7 +215,7 @@ jobs:
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
           # Initialize build system without interactive prompts
-          make defconfig -j1 V=sc
+          yes "" | make oldconfig V=sc
 
       - name: Build package
         run: |
