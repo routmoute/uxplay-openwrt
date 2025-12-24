@@ -210,23 +210,12 @@ jobs:
           CONFIG_PACKAGE_libstdcpp=y
           EOF
 
-      - name: Update feeds and install dependencies
+      - name: Build package
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          # Update feeds to get dependency packages
-          ./scripts/feeds update packages
-          # Install dependency packages from feeds
-          for dep in libplist libopenssl libdbus mdnsresponder libgstreamer1 gstreamer1-plugins-base; do
-            ./scripts/feeds install "$dep"
-          done
-
-      - name: Build package with dependencies
-        run: |
-          SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
-          cd "$SDK_DIR"
-          # Just compile uxplay - it will pull in dependencies as needed
-          # Ignore warnings about missing optional dependencies
+          # In SDK, dependencies are pre-built and available
+          # Just compile uxplay
           make package/uxplay/compile V=w
           
       - name: Create package artifact
