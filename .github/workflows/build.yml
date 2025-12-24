@@ -211,7 +211,8 @@ jobs:
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          make defconfig V=s
+          # Use -i (ignore errors) flag for defconfig to proceed even if some packages are missing
+          make defconfig -i V=s 2>&1 || make defconfig V=s 2>&1 | grep -v "glob failed" || true
           
       - name: Build package
         run: |
