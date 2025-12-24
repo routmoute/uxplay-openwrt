@@ -211,8 +211,12 @@ jobs:
         run: |
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
-          # Use -i (ignore errors) flag for defconfig to proceed even if some packages are missing
-          make defconfig -i V=s 2>&1 || make defconfig V=s 2>&1 | grep -v "glob failed" || true
+          # Skip defconfig if it fails - we'll configure manually
+          make defconfig V=s 2>&1 || {
+            echo "defconfig failed, continuing with manual config..."
+            # Ensure uxplay=m is set in .config
+            echo "CONFIG_PACKAGE_uxplay=m" >> .config
+          }
           
       - name: Build package
         run: |
