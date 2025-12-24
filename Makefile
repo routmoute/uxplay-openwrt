@@ -34,8 +34,7 @@ define Package/uxplay
   CATEGORY:=Multimedia
   TITLE:=AirPlay Mirror and Audio server
   URL:=https://github.com/FDH2/UxPlay
-  DEPENDS:=+libstdcpp +libplist +libopenssl +libavahi-compat-libdnssd +libgstreamer1 \
-	+gstreamer1-plugins-base +gstreamer1-plugins-good +gstreamer1-plugins-bad
+  DEPENDS:=+libstdcpp +libplist +libopenssl +libavahi +libgstreamer1 +gstreamer1-plugins-base
   MENU:=1
 endef
 

@@ -94,53 +94,49 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-        
-      - name: Set up environment
-        run: |
-          echo "SDK_URL=$(curl -s https://api.github.com/repos/openwrt/openwrt/releases | grep -oP '"browser_download_url": "\K[^"]*SDK[^"]*23\.05[^"]*${{ matrix.target }}-${{ matrix.subtarget }}[^"]*\.tar\.xz' | head -1)" >> $GITHUB_ENV
           
       - name: Download OpenWrt SDK
         run: |
-          # Known SDK URLs
+          # Known SDK URLs for OpenWrt 24.10.4
           case "${{ matrix.target }}-${{ matrix.subtarget }}" in
             x86-64)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/64/openwrt-sdk-23.05.0-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/x86/64/openwrt-sdk-24.10.4-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             x86-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/x86/generic/openwrt-sdk-23.05.0-x86-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/x86/generic/openwrt-sdk-24.10.4-x86-generic_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             armsr-armv7)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armsr/armv7/openwrt-sdk-23.05.0-armsr-armv7_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv7/openwrt-sdk-24.10.4-armsr-armv7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst"
               ;;
             armsr-armv8)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/armsr/armv8/openwrt-sdk-23.05.0-armsr-armv8_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/armsr/armv8/openwrt-sdk-24.10.4-armsr-armv8_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             bcm27xx-bcm2711)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2711/openwrt-sdk-23.05.0-bcm27xx-bcm2711_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2711/openwrt-sdk-24.10.4-bcm27xx-bcm2711_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             bcm27xx-bcm2709)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2709/openwrt-sdk-23.05.0-bcm27xx-bcm2709_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2709/openwrt-sdk-24.10.4-bcm27xx-bcm2709_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst"
               ;;
             bcm27xx-bcm2710)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2710/openwrt-sdk-23.05.0-bcm27xx-bcm2710_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2710/openwrt-sdk-24.10.4-bcm27xx-bcm2710_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             bcm27xx-bcm2708)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/bcm27xx/bcm2708/openwrt-sdk-23.05.0-bcm27xx-bcm2708_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/bcm27xx/bcm2708/openwrt-sdk-24.10.4-bcm27xx-bcm2708_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst"
               ;;
             ramips-mt7621)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ramips/mt7621/openwrt-sdk-23.05.0-ramips-mt7621_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/ramips/mt7621/openwrt-sdk-24.10.4-ramips-mt7621_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             mediatek-mt7622)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7622/openwrt-sdk-23.05.0-mediatek-mt7622_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7622/openwrt-sdk-24.10.4-mediatek-mt7622_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             mediatek-mt7623)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7623/openwrt-sdk-23.05.0-mediatek-mt7623_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7623/openwrt-sdk-24.10.4-mediatek-mt7623_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             mediatek-mt7629)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/mediatek/mt7629/openwrt-sdk-23.05.0-mediatek-mt7629_gcc-12.3.0_musl_eabi.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/mediatek/mt7629/openwrt-sdk-24.10.4-mediatek-mt7629_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
             ipq807x-generic)
-              SDK_URL="https://downloads.openwrt.org/releases/23.05.0/targets/ipq807x/generic/openwrt-sdk-23.05.0-ipq807x-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+              SDK_URL="https://downloads.openwrt.org/releases/24.10.4/targets/ipq807x/generic/openwrt-sdk-24.10.4-ipq807x-generic_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
               ;;
 
             *)
@@ -164,16 +160,16 @@ jobs:
         run: |
           if ! ls -d openwrt-sdk-* &>/dev/null; then
             echo "Downloading SDK from: $SDK_URL"
-            curl -L -o sdk.tar.xz "$SDK_URL" || wget -q "$SDK_URL" -O sdk.tar.xz
-            tar -xf sdk.tar.xz
-            rm sdk.tar.xz
+            curl -L -o sdk.tar.zst "$SDK_URL" || wget -q "$SDK_URL" -O sdk.tar.zst
+            tar -xf sdk.tar.zst
+            rm sdk.tar.zst
           fi
           
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev \
-            gawk git unzip gettext libssl-dev python3 python3-pip
+            gawk git unzip gettext libssl-dev python3 python3-pip zstd
             
       - name: Prepare package
         run: |
