@@ -37,7 +37,7 @@ define Package/uxplay
   CATEGORY:=Multimedia
   TITLE:=AirPlay Mirror and Audio server
   URL:=https://github.com/FDH2/UxPlay
-  DEPENDS:=+libstdcpp +libplist +libopenssl +avahi-dbus-daemon +libavahi-compat-libdns_sd
+  DEPENDS:=+libstdcpp +libplist +libopenssl +avahi-dbus-daemon +libavahi-compat-libdns_sd +libgstreamer1 +libgst1app +libgst1video +libgst1sdp
 endef
 
 define Package/uxplay/description
@@ -53,6 +53,7 @@ CMAKE_OPTIONS += \
 	-DNO_MARCH_NATIVE=ON \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DWITH_SYSTEMD=OFF \
+	-DNO_X11_DEPS=ON \
 	-DOPENSSL_ROOT_DIR=$(STAGING_DIR)/usr \
 	-DOPENSSL_INCLUDE_DIR=$(STAGING_DIR)/usr/include \
 	-DOPENSSL_CRYPTO_LIBRARY=$(STAGING_DIR)/usr/lib/libcrypto.so \

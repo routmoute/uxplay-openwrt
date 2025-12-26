@@ -86,7 +86,7 @@ jobs:
           ./scripts/feeds install -a -p packages
           
           # Installer les dépendances spécifiques d'uxplay
-          ./scripts/feeds install libplist openssl avahi avahi-libdns_sd
+          ./scripts/feeds install libplist openssl avahi avahi-libdns_sd gstreamer1 gst1-mod-app gst1-mod-video
           
           cat > .config << EOF
           CONFIG_TARGET_${{ matrix.target }}=y
