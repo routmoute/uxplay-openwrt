@@ -81,8 +81,8 @@ jobs:
           SDK_DIR=$(ls -d openwrt-sdk-* | head -1)
           cd "$SDK_DIR"
           
-          # Update feeds pour obtenir les dépendances
-          ./scripts/feeds update packages
+          # Update tous les feeds
+          ./scripts/feeds update -a
           ./scripts/feeds install -a -p packages
           
           # Installer uniquement les dépendances qui compilent sans problème
