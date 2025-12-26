@@ -16,6 +16,7 @@ else
   PKG_SOURCE_URL:=https://github.com/FDH2/UxPlay.git
   PKG_SOURCE_VERSION:=$(PKG_VERSION)
   PKG_MIRROR_HASH:=skip
+  PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 endif
 
 PKG_INSTALL:=1
