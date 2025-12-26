@@ -86,7 +86,7 @@ jobs:
           ./scripts/feeds install -a -p packages
           
           # Installer uniquement les dépendances qui compilent sans problème
-          ./scripts/feeds install libplist openssl avahi libavahi-compat-libdns_sd
+          ./scripts/feeds install libplist openssl mdnsresponder
           
           # Télécharger les .ipk pré-compilés pour GStreamer/GLib2 depuis les repos OpenWrt
           ARCH="${{ matrix.arch }}"
