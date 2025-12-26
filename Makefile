@@ -52,7 +52,9 @@ CMAKE_OPTIONS += \
 	-DOPENSSL_ROOT_DIR=$(STAGING_DIR)/usr \
 	-DOPENSSL_INCLUDE_DIR=$(STAGING_DIR)/usr/include \
 	-DOPENSSL_CRYPTO_LIBRARY=$(STAGING_DIR)/usr/lib/libcrypto.so \
-	-DOPENSSL_SSL_LIBRARY=$(STAGING_DIR)/usr/lib/libssl.so
+	-DOPENSSL_SSL_LIBRARY=$(STAGING_DIR)/usr/lib/libssl.so \
+	-Ddns_sd_INCLUDE_DIR=$(STAGING_DIR)/usr/include \
+	-Ddns_sd_LIBRARY=$(STAGING_DIR)/usr/lib/libdns_sd.so
 
 define Package/uxplay/install
 	$(INSTALL_DIR) $(1)/usr/bin
