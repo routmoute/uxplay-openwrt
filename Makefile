@@ -48,7 +48,11 @@ endef
 CMAKE_OPTIONS += \
 	-DNO_MARCH_NATIVE=ON \
 	-DCMAKE_BUILD_TYPE=Release \
-	-DWITH_SYSTEMD=OFF
+	-DWITH_SYSTEMD=OFF \
+	-DOPENSSL_ROOT_DIR=$(STAGING_DIR)/usr \
+	-DOPENSSL_INCLUDE_DIR=$(STAGING_DIR)/usr/include \
+	-DOPENSSL_CRYPTO_LIBRARY=$(STAGING_DIR)/usr/lib/libcrypto.so \
+	-DOPENSSL_SSL_LIBRARY=$(STAGING_DIR)/usr/lib/libssl.so
 
 define Package/uxplay/install
 	$(INSTALL_DIR) $(1)/usr/bin
