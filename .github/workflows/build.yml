@@ -85,8 +85,34 @@ jobs:
           ./scripts/feeds update packages
           ./scripts/feeds install -a -p packages
           
-          # Installer les dépendances spécifiques d'uxplay
-          ./scripts/feeds install libplist openssl avahi avahi-libdns_sd gstreamer1 gst1-mod-app gst1-mod-video
+          # Installer uniquement les dépendances qui compilent sans problème
+          ./scripts/feeds install libplist openssl avahi avahi-libdns_sd
+          
+          # Télécharger les .ipk pré-compilés pour GStreamer/GLib2 depuis les repos OpenWrt
+          ARCH="${{ matrix.arch }}"
+          OPENWRT_VER="24.10.4"
+          PKG_URL="https://downloads.openwrt.org/releases/${OPENWRT_VER}/packages/${ARCH}/packages"
+          
+          mkdir -p dl_ipk
+          cd dl_ipk
+          
+          # Télécharger les packages GStreamer + GLib2
+          wget -q "${PKG_URL}/libglib2_*.ipk" || echo "libglib2 not found"
+          wget -q "${PKG_URL}/libgstreamer1_*.ipk" || echo "libgstreamer1 not found"  
+          wget -q "${PKG_URL}/libgst1app_*.ipk" || echo "libgst1app not found"
+          wget -q "${PKG_URL}/libgst1video_*.ipk" || echo "libgst1video not found"
+          wget -q "${PKG_URL}/libgst1sdp_*.ipk" || echo "libgst1sdp not found"
+          
+          # Extraire les .ipk dans staging_dir pour avoir les headers
+          for ipk in *.ipk; do
+            [ -f "$ipk" ] || continue
+            echo "Extracting $ipk"
+            ar x "$ipk"
+            tar -xzf data.tar.gz -C ../staging_dir/target-*/
+            rm -f data.tar.gz control.tar.gz debian-binary
+          done
+          
+          cd ..
           
           cat > .config << EOF
           CONFIG_TARGET_${{ matrix.target }}=y
@@ -95,10 +121,7 @@ jobs:
           EOF
           yes "" | make oldconfig V=sc 2>&1 | tail -20
           
-          # Test: compiler glib2 d'abord pour voir les erreurs détaillées
-          make package/feeds/packages/glib2/compile V=s
-          
-          # Compiler uxplay (les dépendances seront compilées automatiquement)
+          # Compiler uniquement uxplay
           make package/uxplay/compile V=s
           
       - name: Package
