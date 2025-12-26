@@ -85,6 +85,9 @@ jobs:
           ./scripts/feeds update packages
           ./scripts/feeds install -a -p packages
           
+          # Installer les dépendances spécifiques d'uxplay
+          ./scripts/feeds install libplist openssl avahi
+          
           cat > .config << EOF
           CONFIG_TARGET_${{ matrix.target }}=y
           CONFIG_TARGET_${{ matrix.target }}_${{ matrix.subtarget }}=y
