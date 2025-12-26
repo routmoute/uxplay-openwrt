@@ -97,11 +97,11 @@ jobs:
           cd dl_ipk
           
           # Télécharger les packages GStreamer + GLib2
-          wget -q "${PKG_URL}/libglib2_*.ipk" || echo "libglib2 not found"
-          wget -q "${PKG_URL}/libgstreamer1_*.ipk" || echo "libgstreamer1 not found"  
-          wget -q "${PKG_URL}/libgst1app_*.ipk" || echo "libgst1app not found"
-          wget -q "${PKG_URL}/libgst1video_*.ipk" || echo "libgst1video not found"
-          wget -q "${PKG_URL}/libgst1sdp_*.ipk" || echo "libgst1sdp not found"
+          wget -q "${PKG_URL}/libglib2_*.ipk"
+          wget -q "${PKG_URL}/libgstreamer1_*.ipk"
+          wget -q "${PKG_URL}/libgst1app_*.ipk"
+          wget -q "${PKG_URL}/libgst1video_*.ipk"
+          wget -q "${PKG_URL}/libgst1sdp_*.ipk"
           
           # Extraire les .ipk dans staging_dir pour avoir les headers
           for ipk in *.ipk; do
@@ -119,10 +119,10 @@ jobs:
           CONFIG_TARGET_${{ matrix.target }}_${{ matrix.subtarget }}=y
           CONFIG_PACKAGE_uxplay=m
           EOF
-          yes "" | make oldconfig V=sc 2>&1 | tail -20
+          yes "" | make oldconfig V=w
           
           # Compiler uniquement uxplay
-          make package/uxplay/compile V=s
+          make package/uxplay/compile V=w
           
       - name: Package
         run: |
