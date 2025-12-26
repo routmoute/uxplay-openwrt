@@ -28,6 +28,10 @@ PKG_MAINTAINER:=OpenWrt
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+# Tell CMake where to find staging directory for dependencies
+CMAKE_OPTIONS += \
+	-DCMAKE_PREFIX_PATH=$(STAGING_DIR)/usr
+
 define Package/uxplay
   SECTION:=multimedia
   CATEGORY:=Multimedia
