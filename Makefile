@@ -45,7 +45,8 @@ define Package/uxplay/description
   It allows your Apple devices to stream audio and video to a Linux system
   running UxPlay, similar to how they can stream to an Apple TV.
   
-  Includes GStreamer support for audio/video rendering.
+  This build is audio-only. Install gstreamer1-plugins-* packages separately
+  for video support.
 endef
 
 CMAKE_OPTIONS += \
@@ -61,12 +62,6 @@ CMAKE_OPTIONS += \
 	-Ddns_sd_LIBRARY=$(STAGING_DIR)/usr/lib/libdns_sd.so \
 	-DDNSSD=$(STAGING_DIR)/usr/lib/libdns_sd.so \
 	-DDNSSD_INCLUDE_DIR=$(STAGING_DIR)/usr/include
-
-# Override CMAKE_ environment variables to ensure pkg-config finds GStreamer
-define Build/Configure
-	export PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig:$(PKG_CONFIG_PATH)"; \
-	$(call Build/Configure/Default)
-endef
 
 define Package/uxplay/install
 	$(INSTALL_DIR) $(1)/usr/bin
