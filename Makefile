@@ -37,7 +37,7 @@ define Package/uxplay
   CATEGORY:=Multimedia
   TITLE:=AirPlay Mirror and Audio server
   URL:=https://github.com/FDH2/UxPlay
-  DEPENDS:=+libstdcpp +libplist +libopenssl +mdnsresponder
+  DEPENDS:=+libstdcpp +libplist +libopenssl +mdnsresponder +libgstreamer1 +gstreamer1-plugins-base
 endef
 
 define Package/uxplay/description
@@ -45,8 +45,8 @@ define Package/uxplay/description
   It allows your Apple devices to stream audio and video to a Linux system
   running UxPlay, similar to how they can stream to an Apple TV.
   
-  This build is audio-only. Install gstreamer1-plugins-* packages separately
-  for video support.
+  GStreamer plugins (plugins-base, plugins-good, plugins-bad, libav) will be
+  automatically installed. For best video decoding, also install gstreamer1-plugins-bad.
 endef
 
 CMAKE_OPTIONS += \
