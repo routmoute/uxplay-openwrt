@@ -97,11 +97,11 @@ jobs:
           mkdir -p dl_ipk
           cd dl_ipk
           
-          # Télécharger GStreamer (continuer si indisponible)
-          wget "${PKG_URL}/gstreamer1_*.ipk"
-          wget "${PKG_URL}/libgst1app_*.ipk"
-          wget "${PKG_URL}/libgst1video_*.ipk"
-          wget "${PKG_URL}/libgst1sdp_*.ipk"
+          # Récupérer la liste des fichiers et télécharger les packages GStreamer
+          curl -s "$PKG_URL/" | grep -o 'href="[^"]*\.ipk"' | sed 's/href="//;s/"//' | grep -E '(libgstreamer1_|gstreamer1-plugins-base_)' | while read pkg; do
+            echo "Downloading $pkg"
+            wget -nv "${PKG_URL}/${pkg}"
+          done
           
           # Extraire dans staging_dir pour les headers
           STAGING_DIR=$(ls -d ../staging_dir/target-* | head -1)
