@@ -97,14 +97,15 @@ jobs:
           mkdir -p dl_ipk
           cd dl_ipk
           
-          # Récupérer la liste des fichiers et télécharger les packages GStreamer
-          curl -s "$PKG_URL/" | grep -o 'href="[^"]*\.ipk"' | sed 's/href="//;s/"//' | grep -E '(libgstreamer1_|gstreamer1-plugins-base_)' | while read pkg; do
+          # Récupérer la liste des fichiers et télécharger les packages GStreamer (base + libs)
+          curl -s "$PKG_URL/" | grep -o 'href="[^"]*\.ipk"' | sed 's/href="//;s/"//' | grep -E '(^gstreamer1_|^gstreamer1-libs_|^gstreamer1-plugins-base_|^libgstreamer1_|^libgst)' | while read pkg; do
             echo "Downloading $pkg"
             wget -nv "${PKG_URL}/${pkg}"
           done
           
           # Extraire dans staging_dir pour les headers
           STAGING_DIR=$(ls -d ../staging_dir/target-* | head -1)
+          echo "Extracting to $STAGING_DIR"
           for ipk in *.ipk; do
             [ -f "$ipk" ] || continue
             echo "Extracting $ipk for headers"
@@ -120,6 +121,11 @@ jobs:
           done
           
           cd ..
+          
+          # Configurer PKG_CONFIG_PATH pour que CMake trouve les .pc files
+          export PKG_CONFIG_PATH="$STAGING_DIR/usr/lib/pkgconfig:$PKG_CONFIG_PATH"
+          echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
+          ls -la "$STAGING_DIR/usr/lib/pkgconfig/" || echo "No pkgconfig dir"
           
           cat > .config << EOF
           CONFIG_TARGET_${{ matrix.target }}=y
