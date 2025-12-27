@@ -62,6 +62,12 @@ CMAKE_OPTIONS += \
 	-DDNSSD=$(STAGING_DIR)/usr/lib/libdns_sd.so \
 	-DDNSSD_INCLUDE_DIR=$(STAGING_DIR)/usr/include
 
+# Override CMAKE_ environment variables to ensure pkg-config finds GStreamer
+define Build/Configure
+	export PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig:$(PKG_CONFIG_PATH)"; \
+	$(call Build/Configure/Default)
+endef
+
 define Package/uxplay/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uxplay $(1)/usr/bin/
