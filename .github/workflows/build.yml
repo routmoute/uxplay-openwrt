@@ -93,21 +93,23 @@ jobs:
           OPENWRT_VER="24.10.4"
           PKG_URL="https://downloads.openwrt.org/releases/${OPENWRT_VER}/packages/${PKG_ARCH}/packages"
           
+          echo "Downloading GStreamer packages from $PKG_URL"
           mkdir -p dl_ipk
           cd dl_ipk
           
           # Télécharger GStreamer (continuer si indisponible)
-          wget -q "${PKG_URL}/libgstreamer1_*.ipk"
-          wget -q "${PKG_URL}/libgst1app_*.ipk"
-          wget -q "${PKG_URL}/libgst1video_*.ipk"
-          wget -q "${PKG_URL}/libgst1sdp_*.ipk"
+          wget "${PKG_URL}/gstreamer1_*.ipk" || echo "gstreamer1 not available"
+          wget "${PKG_URL}/libgst1app_*.ipk" || echo "libgst1app not available"
+          wget "${PKG_URL}/libgst1video_*.ipk" || echo "libgst1video not available"
+          wget "${PKG_URL}/libgst1sdp_*.ipk" || echo "libgst1sdp not available"
           
-          # Extraire dans staging_dir pour la compilation
+          # Extraire dans staging_dir pour les headers
+          STAGING_DIR=$(ls -d ../staging_dir/target-* | head -1)
           for ipk in *.ipk; do
             [ -f "$ipk" ] || continue
             echo "Extracting $ipk for headers"
             ar x "$ipk"
-            tar -xzf data.tar.gz -C ../staging_dir/target-*/
+            tar -xzf data.tar.gz -C "$STAGING_DIR/" 2>/dev/null || true
             rm -f data.tar.gz control.tar.gz debian-binary
           done
           
