@@ -98,10 +98,10 @@ jobs:
           cd dl_ipk
           
           # Télécharger GStreamer (continuer si indisponible)
-          wget "${PKG_URL}/gstreamer1_*.ipk" || echo "gstreamer1 not available"
-          wget "${PKG_URL}/libgst1app_*.ipk" || echo "libgst1app not available"
-          wget "${PKG_URL}/libgst1video_*.ipk" || echo "libgst1video not available"
-          wget "${PKG_URL}/libgst1sdp_*.ipk" || echo "libgst1sdp not available"
+          wget "${PKG_URL}/gstreamer1_*.ipk"
+          wget "${PKG_URL}/libgst1app_*.ipk"
+          wget "${PKG_URL}/libgst1video_*.ipk"
+          wget "${PKG_URL}/libgst1sdp_*.ipk"
           
           # Extraire dans staging_dir pour les headers
           STAGING_DIR=$(ls -d ../staging_dir/target-* | head -1)
@@ -109,7 +109,7 @@ jobs:
             [ -f "$ipk" ] || continue
             echo "Extracting $ipk for headers"
             ar x "$ipk"
-            tar -xzf data.tar.gz -C "$STAGING_DIR/" 2>/dev/null || true
+            tar -xzf data.tar.gz -C "$STAGING_DIR/"
             rm -f data.tar.gz control.tar.gz debian-binary
           done
           
