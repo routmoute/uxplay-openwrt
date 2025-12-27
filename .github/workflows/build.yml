@@ -108,9 +108,15 @@ jobs:
           for ipk in *.ipk; do
             [ -f "$ipk" ] || continue
             echo "Extracting $ipk for headers"
-            ar x "$ipk"
-            tar -xzf data.tar.gz -C "$STAGING_DIR/"
-            rm -f data.tar.gz control.tar.gz debian-binary
+            file "$ipk"
+            # Essayer ar d'abord, sinon tar directement
+            if ar x "$ipk" 2>/dev/null; then
+              tar -xzf data.tar.gz -C "$STAGING_DIR/"
+              rm -f data.tar.gz control.tar.gz debian-binary
+            else
+              echo "Not an ar archive, trying tar directly"
+              tar -xzf "$ipk" -C "$STAGING_DIR/" 2>/dev/null || true
+            fi
           done
           
           cd ..
